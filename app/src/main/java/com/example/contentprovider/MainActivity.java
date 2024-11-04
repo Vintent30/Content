@@ -1,19 +1,15 @@
 package com.example.contentprovider;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CONTACTS_PERMISSION = 1001;
-    Button btn;
+    private Button btn1, btn2, btn3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,39 +19,44 @@ public class MainActivity extends AppCompatActivity {
         addEvent();
     }
 
-    private void addEvent() {
-        btn.setOnClickListener(new View.OnClickListener() {
+    private void addEvent(){
+        btn1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                    // Yêu cầu quyền nếu chưa được cấp
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{android.Manifest.permission.READ_CONTACTS}, REQUEST_CONTACTS_PERMISSION);
-                } else {
-                    openDanhBa();
-                }
+            public void onClick(View view) {
+                xuLyMoManHinhDanhBa();
+            }
+        });
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                xuLyMoManHinhTinNhan();
+            }
+        });
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                xuLyMoManHinhCuocgoi();
             }
         });
     }
 
-    private void openDanhBa() {
-        Intent intent = new Intent(MainActivity.this, DanhBa.class);
+    private void xuLyMoManHinhDanhBa(){
+        Intent intent = new Intent(MainActivity.this, DanhBa.class); // Sửa đổi ở đây
         startActivity(intent);
     }
 
-    private void addControl() {
-        btn = findViewById(R.id.btnLoad);
+    private void xuLyMoManHinhTinNhan() {
+        Intent intent = new Intent(MainActivity.this, TinNhan.class);
+        startActivity(intent);
+    }
+    private void xuLyMoManHinhCuocgoi() {
+        Intent intent = new Intent(MainActivity.this, Call.class);
+        startActivity(intent);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_CONTACTS_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openDanhBa();
-            } else {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
-        }
+    private void addControl(){
+        btn1 = findViewById(R.id.btnLoadDB);
+        btn2 = findViewById(R.id.btnLoadTN);
+        btn3 = findViewById(R.id.btnLoadCL);
     }
 }

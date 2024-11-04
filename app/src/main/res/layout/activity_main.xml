@@ -6,10 +6,24 @@
     android:padding="16dp">
     <!-- Nút tải tin nhắn -->
     <Button
-        android:id="@+id/btnLoad"
+        android:id="@+id/btnLoadDB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tải Danh Bạ"
+        android:backgroundTint="#4CAF50"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/btnLoadTN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tải Tin Nhắn"
+        android:backgroundTint="#4CAF50"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/btnLoadCL"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tải Cuộc gọi"
         android:backgroundTint="#4CAF50"
         android:gravity="center"/>
     <TextView

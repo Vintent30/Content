@@ -1,10 +1,10 @@
 package com.example.contentprovider;
 
-public class Contact {
+public class DanhBa_Class {
     private String name;
     private String phone;
 
-    public Contact(String name, String phone) {
+    public DanhBa_Class(String name, String phone) {
         this.name = name;
         this.phone = phone;
     }

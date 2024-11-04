@@ -1,58 +1,80 @@
 package com.example.contentprovider;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import java.util.ArrayList;
 
 public class DanhBa extends AppCompatActivity {
 
-    ListView listView;
-    ArrayList<Contact> dsDanhBa;
-    ArrayAdapter<Contact> adapterDanhBa;
+    private static final int REQUEST_CONTACTS_PERMISSION = 1001;
+    private ListView contactListView;
+    private ArrayList<DanhBa_Class> contactList;
+    private ArrayAdapter<DanhBa_Class> contactAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_danh_ba);
+
         addControls();
-        showAllContact();
-    }
-
-    private void showAllContact() {
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-
-        if (cursor != null) {
-            dsDanhBa.clear();  // Xóa dữ liệu cũ trước khi thêm mới
-            while (cursor.moveToNext()) {
-                String tenCotName = ContactsContract.Contacts.DISPLAY_NAME;
-                String tenCotPhone = ContactsContract.CommonDataKinds.Phone.NUMBER;
-
-                int viTriCotName = cursor.getColumnIndex(tenCotName);
-                int viTriCotPhone = cursor.getColumnIndex(tenCotPhone);
-
-                String name = cursor.getString(viTriCotName);
-                String phone = cursor.getString(viTriCotPhone);
-
-                Contact contact = new Contact(name, phone);
-                dsDanhBa.add(contact);
-            }
-            cursor.close();  // Đóng con trỏ sau khi sử dụng
-            adapterDanhBa.notifyDataSetChanged();  // Cập nhật ListView
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CONTACTS_PERMISSION);
+        } else {
+            showAllContactsFromDevice();
         }
     }
 
     private void addControls() {
-        listView = findViewById(R.id.lvDanhBa);
-        dsDanhBa = new ArrayList<>();
-        adapterDanhBa = new ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, dsDanhBa
-        );
-        listView.setAdapter(adapterDanhBa);
+        contactListView = findViewById(R.id.lvDanhBa);
+        contactList = new ArrayList<>();
+        contactAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, contactList);
+        contactListView.setAdapter(contactAdapter);
+    }
+
+    private void showAllContactsFromDevice() {
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+
+        try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null) {
+                contactList.clear();
+                while (cursor.moveToNext()) {
+                    String nameColumn = ContactsContract.Contacts.DISPLAY_NAME;
+                    String phoneColumn = ContactsContract.CommonDataKinds.Phone.NUMBER;
+
+                    int nameIndex = cursor.getColumnIndex(nameColumn);
+                    int phoneIndex = cursor.getColumnIndex(phoneColumn);
+
+                    String name = nameIndex != -1 ? cursor.getString(nameIndex) : "Unknown";
+                    String phone = phoneIndex != -1 ? cursor.getString(phoneIndex) : "No Number";
+
+                    DanhBa_Class contact = new DanhBa_Class(name, phone);
+                    contactList.add(contact);
+                }
+                contactAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CONTACTS_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showAllContactsFromDevice();
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
